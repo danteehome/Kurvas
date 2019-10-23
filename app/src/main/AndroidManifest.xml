@@ -22,13 +22,10 @@
             </intent-filter>
         </activity>
         <activity
-            android:name=".LoginActivity"
-            android:label="@string/title_activity_login" />
-        <activity android:name=".RegisterActivity" />
-        <activity
-            android:name=".Gamefolder.GameFrontPage"
+            android:name=".Gamefolder.GameIdlePage"
             android:label="@string/title_activity_game_front_page"
-            android:theme="@style/AppTheme.NoActionBar"></activity>
+            android:theme="@style/AppTheme.NoActionBar" />
+        <activity android:name=".Gamefolder.Game"></activity>
     </application>
 
 </manifest>
