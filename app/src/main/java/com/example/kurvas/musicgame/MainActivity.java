@@ -51,6 +51,7 @@ public class MainActivity extends AppCompatActivity {
         });
 
     }
+
     public void createSignInIntent() {
         // [START auth_fui_create_intent]
         // Choose authentication providers
@@ -86,6 +87,9 @@ public class MainActivity extends AppCompatActivity {
                     userEmail =user.getEmail();
                     Toast.makeText(getApplicationContext(),"Welcome! "+ userEmail,Toast.LENGTH_SHORT).show();}
                 Intent intent=new Intent(MainActivity.this,GameIdlePage.class);
+                Bundle bundle=new Bundle();
+                bundle.putString("email",userEmail);
+                intent.putExtras(bundle);
                 startActivity(intent);
 
             } else {

@@ -1,5 +1,6 @@
 package com.example.kurvas.musicgame.Gamefolder;
 
+import android.content.Intent;
 import android.os.Bundle;
 
 import com.example.kurvas.musicgame.MainActivity;
@@ -50,36 +51,28 @@ public class GameIdlePage extends MainActivity {
         Button btnLogout = findViewById(R.id.btnLogout);
         Button btnhighscore = findViewById(R.id.btnhighscore);
         Button btngethighscore=findViewById(R.id.btngethighscore);
+        Button btnGame=findViewById(R.id.btn_startgame);
+
+        Bundle userinfo=new Bundle();
+        Intent receive=new Intent();
+        userinfo=receive.getExtras();
+
 
 
 
         // Access a Cloud Firestore instance from your Activity
 
-        final Map<String, Object> highscore = new HashMap<>();
-        highscore.put("email", user.getEmail());
-        highscore.put("highscore", CurrentHighscore);
+
 
 
         btnhighscore.setOnClickListener(new View.OnClickListener() {
         @Override
         public void onClick(View v) {
-            db.collection("UserScore").document(user.getEmail())
-                 .set(highscore)
-                    .addOnSuccessListener(new OnSuccessListener<Void>() {
-                    @Override
-                    public void onSuccess(Void Avoid) {
-                        Log.d(TAG,"DocumentSnapshot added with ID: " );
-                    }
-                })
-                .addOnFailureListener(new OnFailureListener() {
-                    @Override
-                    public void onFailure(@NonNull Exception e) {
-                        Log.w(TAG, "Error adding document", e);
-                    }
-                });
+            setHighscore();
 
         }
     });
+
 
         btngethighscore.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -88,6 +81,13 @@ public class GameIdlePage extends MainActivity {
             }
         });
 
+        btnGame.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent=new Intent(GameIdlePage.this,Game.class);
+                startActivity(intent);
+            }
+        });
 
 
 
@@ -105,6 +105,25 @@ public class GameIdlePage extends MainActivity {
 
         }
 
+    }
+    public void setHighscore(){
+        final Map<String, Object> highscore = new HashMap<>();
+        highscore.put("email", user.getEmail());
+        highscore.put("highscore", CurrentHighscore);
+        db.collection("UserScore").document(user.getEmail())
+                .set(highscore)
+                .addOnSuccessListener(new OnSuccessListener<Void>() {
+                    @Override
+                    public void onSuccess(Void Avoid) {
+                        Log.d(TAG,"DocumentSnapshot added with ID: " );
+                    }
+                })
+                .addOnFailureListener(new OnFailureListener() {
+                    @Override
+                    public void onFailure(@NonNull Exception e) {
+                        Log.w(TAG, "Error adding document", e);
+                    }
+                });
     }
     public void getHighscore(){
         DocumentReference docRef = db.collection("UserScore").document(user.getEmail());

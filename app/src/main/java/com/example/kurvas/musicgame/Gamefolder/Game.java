@@ -11,11 +11,14 @@ import android.view.Display;
 import android.view.View;
 import android.view.WindowManager;
 import android.widget.ImageView;
-import android.widget.LinearLayout;
+import android.widget.Switch;
 import android.widget.TextView;
 
+import com.example.kurvas.musicgame.Construtor.Dropper;
 import com.example.kurvas.musicgame.R;
 import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
@@ -46,9 +49,11 @@ public class Game extends AppCompatActivity {
     private int score=0;
     private int highScore;
     private int globaldelay;
-    private static int flag=0;
+    private Map<ImageView, Integer> flag= new HashMap<>();
     private FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
     private String userName[];
+
+    final FirebaseFirestore db = FirebaseFirestore.getInstance();
 
 
 
@@ -70,32 +75,34 @@ public class Game extends AppCompatActivity {
         dropper4=findViewById(R.id.dropper4);
         username=findViewById(R.id.player_name);
         scoreboard=findViewById(R.id.scorecontainer);
-        pause=findViewById(R.id.menu);
-
-
-        final FirebaseFirestore db = FirebaseFirestore.getInstance();
         userName=user.getEmail().split("@",2);
-        username.setText(userName[0]);
 
-        DocumentReference docRef = db.collection("UserScore").document(user.getEmail());
-        docRef.get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
-            @Override
-            public void onComplete(@NonNull Task<DocumentSnapshot> task) {
-                if (task.isSuccessful()) {
-                    DocumentSnapshot document = task.getResult();
-                    if (document.exists()) {
-                        Log.d(TAG, "DocumentSnapshot data: " + document.getData());
-                        Map<String,Object> temp=new HashMap();
-                        temp=document.getData();
-                        highScore=Integer.parseInt(temp.get("highscore").toString());
-                    } else {
-                        Log.d(TAG, "No such document");
-                    }
-                } else {
-                    Log.d(TAG, "get failed with ", task.getException());
-                }
-            }
-        });
+        //Reset score every launch
+        score=0;
+
+        //get highscore if user is logged in
+        if (user!=null){
+            getHighscore();
+            System.out.println("highscore is"+ highScore);
+        }
+        else{
+            highScore=0;
+        }
+
+
+        //import username to it's container
+
+
+        if (user.getEmail()!=null){
+            username.setText("Hi! "+userName[0]);
+        }else{
+            username.setText("Guest Play");
+        }
+
+
+
+
+
 
 
 
@@ -112,67 +119,115 @@ public class Game extends AppCompatActivity {
         dropper2.setY(-240.0f);
         dropper3.setY(-240.0f);
         dropper4.setY(-240.0f);
-        scoreboard.setText(score);
+
+        //separate flags
+        flag.put(dropper1,0);
+        flag.put(dropper2,0);
+        flag.put(dropper3,0);
+        flag.put(dropper4,0);
+
 
         globaldelay=(int)(Math.random()*1000)+1500;
 
-
+        //initiate drop action
         dropRandomizer(dropper1);
         dropRandomizer(dropper2);
         dropRandomizer(dropper3);
         dropRandomizer(dropper4);
 
-        //potential improvement: add a area of click, that only click below certain line will grant score
+        //TODO potential improvement: add a area of click, that only click below certain line will grant score
         dropper1.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 score++;
-
+                System.out.println("current score is "+ score);
+                scoreboard.setText("Current score "+ score);
                 //reset the position and set speed to 0;
-                flag=1;
+                flag.put(dropper1,1);
             }
         });
         dropper2.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 score++;
-                scoreboard.setText(score);
+                scoreboard.setText("Current score "+ score);
                 //reset the position and set speed to 0;
-                flag=1;
+                flag.put(dropper2,1);
             }
         });
         dropper3.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 score++;
-                scoreboard.setText(score);
+                scoreboard.setText("Current score "+ score);
                 //reset the position and set speed to 0;
-                flag=1;
+                flag.put(dropper3,1);
             }
         });
         dropper4.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 score++;
-                scoreboard.setText(score);
+                scoreboard.setText("Current score "+ score);
                 //reset the position and set speed to 0;
-                flag=1;
+                flag.put(dropper4,1);
             }
         });
 
 
+    }
+    @Override
+    public void onBackPressed(){
+        //on back pressed, update score
 
+        setHighscore();
 
-
-
-
-
+    }
+    public void setHighscore(){
+        final Map<String, Object> highscore = new HashMap<>();
+        highscore.put("email", user.getEmail());
+        highscore.put("highscore", score);
+        db.collection("UserScore").document(user.getEmail())
+                .set(highscore)
+                .addOnSuccessListener(new OnSuccessListener<Void>() {
+                    @Override
+                    public void onSuccess(Void Avoid) {
+                        Log.d(TAG,"DocumentSnapshot added with ID: " );
+                    }
+                })
+                .addOnFailureListener(new OnFailureListener() {
+                    @Override
+                    public void onFailure(@NonNull Exception e) {
+                        Log.w(TAG, "Error adding document", e);
+                    }
+                });
+    }
+    public void getHighscore(){
+        DocumentReference docRef = db.collection("UserScore").document(user.getEmail());
+        docRef.get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
+            @Override
+            public void onComplete(@NonNull Task<DocumentSnapshot> task) {
+                if (task.isSuccessful()) {
+                    DocumentSnapshot document = task.getResult();
+                    if (document.exists()) {
+                        Log.d(TAG, "DocumentSnapshot data: " + document.getData());
+                        Map<String,Object> temp;
+                        temp=document.getData();
+                        highScore=Integer.parseInt(temp.get("highscore").toString());
+                    } else {
+                        Log.d(TAG, "No such document");
+                    }
+                } else {
+                    Log.d(TAG, "get failed with ", task.getException());
+                }
+            }
+        });
     }
     public void dropRandomizer(final ImageView dropper){
         //drop at random time, so need to set a timer schedule to call the drop function every several second
         final int slowdropRand,fastdropRand;
-        slowdropRand=(int)(Math.random()*5000)+2000;
-        fastdropRand=(int)(Math.random()*5000)+1000;
+        slowdropRand=(int)(Math.random()*3000)+1000;
+        fastdropRand=(int)(Math.random()*3000)+2000;
         //random decide if it's slow drop or fast drop
         final int period=(Math.random()<0.7 )? slowdropRand:fastdropRand;
         final Timer timer=new Timer();
@@ -223,10 +278,10 @@ public class Game extends AppCompatActivity {
                         int currentmovespeed=basemovespeed;
                         Move(dropper, currentmovespeed + random);
                         //stop the timer when the dropper drop to bottom or get clicked
-                        if (dropper.getY()>screenHeight|| flag==1){
+                        if (dropper.getY()>screenHeight|| flag.get(dropper)==1){
                             timer.cancel();
                             resetPos(dropper);
-                            flag=0;
+                                flag.put(dropper,0);
                         }
                     }
                 });

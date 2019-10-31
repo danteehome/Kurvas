@@ -37,6 +37,35 @@
     },
     {
       "client_info": {
+        "mobilesdk_app_id": "1:853157570167:android:2910e72b17a383b466c872",
+        "android_client_info": {
+          "package_name": "com.example.kurvas.logintest"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "853157570167-6u3i1bsrr60dcf4u026qn0ild5ipcmvh.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBYFEH14DFgDqRByRSYvADFwEzkgzizzlM"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "853157570167-6u3i1bsrr60dcf4u026qn0ild5ipcmvh.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    },
+    {
+      "client_info": {
         "mobilesdk_app_id": "1:853157570167:android:3b535d1b974663a166c872",
         "android_client_info": {
           "package_name": "com.example.kurvas.musicgame"
