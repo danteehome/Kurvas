@@ -159,13 +159,13 @@ public class GameIdlePage extends MainActivity {
                 /*.addOnFailureListener(new OnFailureListener() {
             @Override
             public void onFailure(@NonNull Exception e) {
-                AlertDialog.Builder alertDialog = new AlertDialog.Builder(LoginActivity.this);
+                AlertDialog.Builder alertDialog = new AlertDialog.Builder(GameIdlePage.this);
                 alertDialog.setCancelable(false);
                 alertDialog.setMessage("Warning: Login failed. Please check your info");
                 alertDialog.setPositiveButton("Try again", new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
-                        Intent intent= new Intent(LoginActivity.this,MainActivity.class);
+                        Intent intent= new Intent(GameIdlePage.this,MainActivity.class);
                         startActivity(intent);
                     }
                 });

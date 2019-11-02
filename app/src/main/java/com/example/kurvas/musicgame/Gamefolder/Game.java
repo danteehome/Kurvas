@@ -1,9 +1,12 @@
 package com.example.kurvas.musicgame.Gamefolder;
 
 import androidx.annotation.NonNull;
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.content.DialogInterface;
 import android.graphics.Point;
+import android.media.Image;
 import android.os.Bundle;
 import android.os.Handler;
 import android.util.Log;
@@ -52,6 +55,7 @@ public class Game extends AppCompatActivity {
     private Map<ImageView, Integer> flag= new HashMap<>();
     private FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
     private String userName[];
+    private Map<ImageView, Integer> positioncontainer= new HashMap<>();
 
     final FirebaseFirestore db = FirebaseFirestore.getInstance();
 
@@ -75,6 +79,8 @@ public class Game extends AppCompatActivity {
         dropper4=findViewById(R.id.dropper4);
         username=findViewById(R.id.player_name);
         scoreboard=findViewById(R.id.scorecontainer);
+        pause=findViewById(R.id.pause);
+
         userName=user.getEmail().split("@",2);
 
         //Reset score every launch
@@ -174,13 +180,28 @@ public class Game extends AppCompatActivity {
             }
         });
 
+        pause.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                pause(dropper1);
+                pause(dropper2);
+                pause(dropper3);
+                pause(dropper4);
+                AlertDialog.Builder alertDialog=new AlertDialog.Builder(Game.this);
+                alertDialog.setMessage("Game Paused");
+                alertDialog.setPositiveButton("Return to game", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        unpause(dropper1);
+                        unpause(dropper2);
+                        unpause(dropper3);
+                        unpause(dropper4);
+                    }
+                });
+                alertDialog.show();
+            }
+        });
 
-    }
-    @Override
-    public void onBackPressed(){
-        //on back pressed, update score
-
-        setHighscore();
 
     }
     public void setHighscore(){
@@ -281,7 +302,10 @@ public class Game extends AppCompatActivity {
                         if (dropper.getY()>screenHeight|| flag.get(dropper)==1){
                             timer.cancel();
                             resetPos(dropper);
-                                flag.put(dropper,0);
+                            flag.put(dropper,0);
+                        }
+                        if (flag.get(dropper)==2){
+                            timer.cancel();
                         }
                     }
                 });
@@ -294,6 +318,20 @@ public class Game extends AppCompatActivity {
             highscore=score;
             scoreboard.setText(score);
         }
+
+    }
+    public void pause(ImageView dropper){
+        //get current position
+        int Y = Math.round(dropper.getY());
+        flag.put(dropper,2);
+        positioncontainer.put(dropper,Y);
+
+    }
+    public void unpause(ImageView dropper){
+        dropper.setY(positioncontainer.get(dropper));
+        positioncontainer.put(dropper,0);
+        flag.put(dropper,1);
+
 
     }
 }

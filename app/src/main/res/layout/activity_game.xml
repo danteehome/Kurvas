@@ -81,23 +81,29 @@
     android:layout_width="match_parent"
     android:layout_height="40dp"
     android:layout_alignParentBottom="true"
-    android:weightSum="2">
+    android:weightSum="3">
     <TextView
         android:id="@+id/player_name"
-        android:layout_width="0dp"
+        android:layout_width="wrap_content"
         android:layout_height="match_parent"
         android:layout_weight="1"
         android:layout_alignParentStart="true"
         android:text="Guest"
-        android:textSize="25sp" />
-
+        android:textSize="18sp" />
     <TextView
         android:id="@+id/scorecontainer"
-        android:layout_width="0dp"
+        android:layout_width="wrap_content"
         android:layout_height="match_parent"
         android:layout_weight="1"
-        android:text="Current Score"
-        android:textSize="20sp" />
+        android:text="Score: 0"
+        android:textSize="18sp" />
+    <TextView
+        android:id="@+id/pause"
+        android:layout_width="wrap_content"
+        android:layout_height="match_parent"
+        android:layout_weight="1"
+        android:text="Pause"
+        android:textSize="30sp" />
 </LinearLayout>
 
 
